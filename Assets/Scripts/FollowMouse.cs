@@ -11,6 +11,15 @@ public class FollowMouse : MonoBehaviour
     [Header("Variables")]
     private bool mouseDown = false;
 
+    private float cooldownDur = 0.1f;
+    private float cooldown;
+    [SerializeField] private AudioClip[] slashingSounds;
+    private AudioSource audioSource;
+
+    private void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     private void Start()
     {
         Cursor.visible = false;
@@ -18,11 +27,41 @@ public class FollowMouse : MonoBehaviour
     }
     private void Update()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = new Vector2(mousePos.x, mousePos.y);
+        CursorPosition();
         CuttingActivation(mouseDown);
+
+        if(cooldown > 0)
+        {
+            cooldown -= Time.deltaTime;
+        }
     }
 
+    private void CursorPosition()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        transform.position = new Vector2(mousePos.x, mousePos.y);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (mouseDown)
+        {
+            if (collision.gameObject.CompareTag("Fruit"))
+            {
+                if(cooldown <= 0)
+                {
+                    cooldown = cooldownDur;
+
+                    if (collision.gameObject.GetComponent<FruitScript>().isSliced == false)
+                    {
+                        FruitScript fruitScript = collision.GetComponent<FruitScript>();
+                        audioSource.PlayOneShot(slashingSounds[RandomChoice(slashingSounds.Length)]);
+                        fruitScript.DamageFruit();
+                    }
+                }
+            }
+        }
+    }
     private void CuttingActivation(bool active)
     {
         gameCollider.enabled = active;
@@ -37,5 +76,10 @@ public class FollowMouse : MonoBehaviour
     private void OnMouseUp() 
     {
         mouseDown = false;
+    }
+
+    private int RandomChoice(int length)
+    {
+        return Random.Range(0, length);
     }
 }

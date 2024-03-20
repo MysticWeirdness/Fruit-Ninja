@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class FruitScript : MonoBehaviour
 {
-    private int health;
-    private int value;
+    [SerializeField] private int health;
+    [SerializeField] public int value;
 
-    private float duration = 10f;
-
-    private bool isSliced;
+    public bool isSliced { get; private set; } = false;
 
     [Header("Components")]
     protected private Rigidbody2D rb;
@@ -17,11 +15,12 @@ public class FruitScript : MonoBehaviour
     protected private SpriteRenderer spriteRenderer;
     private FollowMouse player;
     private AudioSource audioSource;
+    private GameManager gameManager;
     [SerializeField] AudioClip[] clipList;
 
-    [Header("Generation Vars")]
-    private int genIndex;
-    private int genLength;
+    [Header("Generation Variables")]
+    [SerializeField] private int genIndex;
+    [SerializeField] private int genLength;
     [SerializeField] private Sprite[] spriteList;
 
     [Header("Physics Variables")]
@@ -30,7 +29,9 @@ public class FruitScript : MonoBehaviour
 
     protected private void Awake()
     {
+        genLength = spriteList.Length - 1;
         rb = GetComponent<Rigidbody2D>();
+        gameManager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         player = GetComponent<FollowMouse>();
         audioSource = GetComponent<AudioSource>();
@@ -43,49 +44,56 @@ public class FruitScript : MonoBehaviour
         StartPhysics();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         DeathCheck();
     }
 
     private void DeathCheck()
     {
-        duration -= Time.deltaTime;
-
-        if(duration <= 0)
+        if(transform.position.y <= -8)
         {
-            Destroy(gameObject);
-        }
-
-        if(transform.position.y < -15)
-        {
+            if(genIndex == 0 & !isSliced)
+            {
+                gameManager.LoseLife();
+            }
             Destroy(gameObject);
         }
     }
-
     private void StartPhysics()
     {
         float yVel = Random.Range(min.y, max.y);
 
-        if(transform.position.x < -2)
+        if(genIndex > 0)
         {
-            min.x = 5;
-            max.x = 8;
-        }
-        else if(transform.position.x > 2)
-        {
-            min.x = -8;
-            max.x = -5;
+            min.x = -5;
+            max.x = 5;
+            min.y = 0;
+            max.y = 8;
+            yVel = Random.Range(min.y, max.y);
         }
         else
         {
-            min.x = -7;
-            max.x = 7;
+            if (transform.position.x < -2)
+            {
+                min.x = 5;
+                max.x = 8;
+            }
+            else if (transform.position.x > 2)
+            {
+                min.x = -8;
+                max.x = -5;
+            }
+            else
+            {
+                min.x = -7;
+                max.x = 7;
+            }
         }
 
         float xVel = Random.Range(min.x, max.x);
 
-        rb.AddForce(new Vector2(xVel, yVel));
+        rb.AddForce(new Vector2(xVel, yVel), ForceMode2D.Impulse);
 
         rb.angularVelocity = ((xVel * yVel) / 2) * 10;
     }
@@ -113,12 +121,13 @@ public class FruitScript : MonoBehaviour
     public virtual void SliceFruit()
     {
         isSliced = true;
+        gameManager.AddPoints(value);
         audioSource.PlayOneShot(clipList[RandomChoice(clipList.Length)]);
 
         if(genIndex < genLength)
         {
-            Instantiate(this.gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
-            Instantiate(this.gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
+            Instantiate(gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
+            Instantiate(gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
             ParticleBurst();
             Destroy(gameObject);
         }
@@ -136,7 +145,7 @@ public class FruitScript : MonoBehaviour
         particles.transform.parent = null;
         particles.Stop();
         particles.Play();
-        Destroy(gameObject, 2f);
+        Destroy(particles.gameObject, 0.5f);
     }
 
     private int RandomChoice(int length)
