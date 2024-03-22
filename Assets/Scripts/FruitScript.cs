@@ -121,7 +121,6 @@ public class FruitScript : MonoBehaviour
     public virtual void SliceFruit()
     {
         isSliced = true;
-        gameManager.AddPoints(value);
         audioSource.PlayOneShot(clipList[RandomChoice(clipList.Length)]);
 
         if(genIndex < genLength)
@@ -129,6 +128,7 @@ public class FruitScript : MonoBehaviour
             Instantiate(gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
             Instantiate(gameObject, transform.position, Quaternion.identity).GetComponent<FruitScript>().Initialize(genIndex);
             ParticleBurst();
+            gameManager.AddPoints(value);
             Destroy(gameObject);
         }
         Destroy(GetComponent<Collider2D>());

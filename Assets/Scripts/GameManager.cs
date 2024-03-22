@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     [Header("Game Variables")]
     private int points;
     private int lives;
-    private bool isRunning;
     private float pointMulti;
 
     [Header("Fruit Variables")]
@@ -24,11 +23,15 @@ public class GameManager : MonoBehaviour
     [Header("UI Components")]
     [SerializeField] private TextMeshProUGUI pointsTextElement;
     [SerializeField] private TextMeshProUGUI[] lifeList;
-    private List<TextMeshProUGUI> livesObject;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private TextMeshProUGUI highscoreText;
+    [SerializeField] private TextMeshProUGUI gameOverScore;
+    private List<TextMeshProUGUI> livesObject = new List<TextMeshProUGUI>();
+
 
     private void Awake()
     {
-        defaultSpawnMinMax = new Vector2 (1, 5);
+        defaultSpawnMinMax = new Vector2 (1, 2);
     }
     public void NewGame()
     {
@@ -36,15 +39,14 @@ public class GameManager : MonoBehaviour
         lives = 3;
         pointMulti = 1;
         spawnMinMax = defaultSpawnMinMax;
-        isRunning = true;
-
-
         livesObject = new List<TextMeshProUGUI>();
         foreach (TextMeshProUGUI life in lifeList)
         {
             livesObject.Add(life);
             life.color = Color.red;
         }
+        gameOverScreen.SetActive(false);
+        Time.timeScale = 1.0f;
     }
 
     private void Start()
@@ -52,9 +54,28 @@ public class GameManager : MonoBehaviour
         NewGame();
     }
 
+    private void Update()
+    {
+        if (spawnCooldown > 0)
+        {
+            spawnCooldown -= Time.deltaTime;
+        }
+        else
+        {
+            SpawnFruit();
+        }
+    }
+
     private void UpdateUI()
     {
         pointsTextElement.text = points.ToString("0000");
+    }
+
+    private void SpawnFruit()
+    {
+        spawnCooldown = Random.Range(spawnMinMax.x, spawnMinMax.y);
+        Vector2 spawnPoint = new Vector2(Random.Range(-6f, 6f), -6f);
+        Instantiate(fruits[RandomChoice(fruits.Length)], spawnPoint, Quaternion.identity);
     }
 
     public void AddPoints(int amount)
@@ -75,8 +96,34 @@ public class GameManager : MonoBehaviour
         life.color = Color.gray;
     }
 
+    private int RandomChoice(int length)
+    {
+        return Random.Range(0, length);
+    }
+
     private void Die()
     {
+        Time.timeScale = 0;
+        gameOverScreen.SetActive(true);
+        pointsTextElement.enabled = false;
+        if (PlayerPrefs.HasKey("Highscore"))
+        {
+            if(points > PlayerPrefs.GetInt("Highscore"))
+            {
+                PlayerPrefs.SetInt("Highscore", points);
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt("Highscore", 0);
+        }
 
+        highscoreText.text = "Highscore: " + PlayerPrefs.GetInt("Highscore").ToString("0000");
+        gameOverScore.text = "Score: " + points.ToString("000");
+        lives = 0;
+        foreach(TextMeshProUGUI life in livesObject)
+        {
+            life.color = Color.gray;
+        }
     }
 }
