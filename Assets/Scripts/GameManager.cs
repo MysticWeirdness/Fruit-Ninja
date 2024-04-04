@@ -26,12 +26,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject gameOverScreen;
     [SerializeField] private TextMeshProUGUI highscoreText;
     [SerializeField] private TextMeshProUGUI gameOverScore;
+    private Animator gameOverAnimator;
     private List<TextMeshProUGUI> livesObject = new List<TextMeshProUGUI>();
 
 
     private void Awake()
     {
         defaultSpawnMinMax = new Vector2 (1, 2);
+        gameOverAnimator = gameOverScreen.GetComponent<Animator>();
     }
     public void NewGame()
     {
@@ -54,6 +56,10 @@ public class GameManager : MonoBehaviour
         NewGame();
     }
 
+    public void SetMulti(float Multi)
+    {
+        pointMulti = Multi;
+    }
     private void Update()
     {
         if (spawnCooldown > 0)

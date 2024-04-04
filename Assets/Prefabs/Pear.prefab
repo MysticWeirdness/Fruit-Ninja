@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: -646171427
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1489024398, guid: 87f3a1ff03b6b67448731e6e8122ccad, type: 3}
+  m_Sprite: {fileID: -269328403, guid: 87f3a1ff03b6b67448731e6e8122ccad, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 2846041609323674232}
   - component: {fileID: 4293421165902348680}
   m_Layer: 3
-  m_Name: Apple
+  m_Name: Pear
   m_TagString: Fruit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,10 +143,11 @@ MonoBehaviour:
   genIndex: 0
   genLength: 4
   spriteList:
-  - {fileID: 1304269811, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
-  - {fileID: 21371369, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
-  - {fileID: -491919959, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
-  - {fileID: 1082065438, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
+  - {fileID: -269328403, guid: 87f3a1ff03b6b67448731e6e8122ccad, type: 3}
+  - {fileID: 607098436, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
+  - {fileID: 1405725088, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
+  - {fileID: 845232732, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
+  - {fileID: -1334057979, guid: 02361557afa0e0b4abe24b06ae75cc0a, type: 3}
   min: {x: -7, y: 8}
   max: {x: 7, y: 15}
 --- !u!50 &5136341838751107932
