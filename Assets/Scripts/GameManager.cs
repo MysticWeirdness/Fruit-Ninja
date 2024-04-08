@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
     private int points;
     private int lives;
     private float pointMulti;
+    private bool running = false;
 
     [Header("Fruit Variables")]
     [SerializeField] private GameObject[] fruits;
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
     }
     public void NewGame()
     {
+        running = true;
         points = 0;
         lives = 3;
         pointMulti = 1;
@@ -51,24 +54,32 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1.0f;
     }
 
-    private void Start()
+    private async void Start()
     {
-        NewGame();
+        await StartTimer();
     }
 
+    private async Task StartTimer()
+    {
+        await Task.Delay(3000);
+        NewGame();
+    }
     public void SetMulti(float Multi)
     {
         pointMulti = Multi;
     }
     private void Update()
     {
-        if (spawnCooldown > 0)
+        if (running)
         {
-            spawnCooldown -= Time.deltaTime;
-        }
-        else
-        {
-            SpawnFruit();
+            if (spawnCooldown > 0)
+            {
+                spawnCooldown -= Time.deltaTime;
+            }
+            else
+            {
+                SpawnFruit();
+            }
         }
     }
 

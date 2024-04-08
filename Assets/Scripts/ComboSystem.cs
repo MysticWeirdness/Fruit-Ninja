@@ -1,18 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ComboSystem : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private GameManager gameManager;
+    private TextMeshProUGUI comboText;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
